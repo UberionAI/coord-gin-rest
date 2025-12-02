@@ -1,6 +1,6 @@
 module github.com/UberionAI/coord-gin-rest
 
-go 1.21
+go 1.24
 
 require (
 	github.com/gin-gonic/gin v1.10.0
