@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: coord-gin-api
+    ports:
+      - "${SERVER_PORT:-8080}:${SERVER_PORT:-8080}"
+    environment:
+      - SERVER_PORT=${SERVER_PORT:-8080}
+      - GIN_MODE=${GIN_MODE:-release}
+      - LOG_LEVEL=${LOG_LEVEL:-warning}
+      # Elasticsearch env vars (for future use)
+      # - ES_HOST=${ES_HOST}
+      # - ES_USER=${ES_USER}
+      # - ES_PASSWORD=${ES_PASSWORD}
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - coord-network
+
+networks:
+  coord-network:
+    driver: bridge
