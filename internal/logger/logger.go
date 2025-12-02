@@ -6,34 +6,25 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
-// Logger wraps zerolog.Logger for application-wide logging
-type Logger struct {
-	logger zerolog.Logger
-}
-
-// New creates a new logger with specified log level
-func New(levelStr string) *Logger {
-	// Configure human-readable console output
+func Init(logLevel string) {
 	zerolog.TimeFieldFormat = time.RFC3339
-	output := zerolog.ConsoleWriter{
-		Out:        os.Stdout,
-		TimeFormat: "2006/01/02 15:04:05",
-	}
 
-	// Parse log level
-	level := parseLogLevel(levelStr)
+	// Устанавливаем уровень логирования
+	level := parseLogLevel(logLevel)
 	zerolog.SetGlobalLevel(level)
 
-	logger := zerolog.New(output).With().Timestamp().Logger()
-
-	return &Logger{logger: logger}
+	// Красивый вывод для консоли
+	log.Logger = log.Output(zerolog.ConsoleWriter{
+		Out:        os.Stdout,
+		TimeFormat: "2006/01/02 15:04:05",
+	})
 }
 
-// parseLogLevel converts string to zerolog.Level
-func parseLogLevel(levelStr string) zerolog.Level {
-	switch strings.ToLower(levelStr) {
+func parseLogLevel(level string) zerolog.Level {
+	switch strings.ToLower(level) {
 	case "debug":
 		return zerolog.DebugLevel
 	case "info":
@@ -47,27 +38,6 @@ func parseLogLevel(levelStr string) zerolog.Level {
 	}
 }
 
-// Info logs informational message
-func (l *Logger) Info(msg string) {
-	l.logger.Info().Msg(msg)
-}
-
-// Warn logs warning message
-func (l *Logger) Warn(msg string) {
-	l.logger.Warn().Msg(msg)
-}
-
-// Error logs error message
-func (l *Logger) Error(msg string, err error) {
-	l.logger.Error().Err(err).Msg(msg)
-}
-
-// Debug logs debug message
-func (l *Logger) Debug(msg string) {
-	l.logger.Debug().Msg(msg)
-}
-
-// WithField adds a field to log entry
-func (l *Logger) WithField(key string, value interface{}) *zerolog.Event {
-	return l.logger.Info().Interface(key, value)
+func Get() *zerolog.Logger {
+	return &log.Logger
 }
